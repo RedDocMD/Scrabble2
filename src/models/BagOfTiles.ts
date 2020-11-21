@@ -41,6 +41,12 @@ export default class BagOfTiles {
             this.fromTiles(remainingTiles)
         ]
     }
+
+    returnTiles(tiles: Tile[]): BagOfTiles {
+        let newTiles = this.tiles.slice();
+        newTiles = newTiles.concat(tiles);
+        return this.fromTiles(newTiles);
+    }
 }
 
 interface TileInfo {
