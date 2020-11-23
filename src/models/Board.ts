@@ -9,9 +9,49 @@ export interface TilePosition {
 
 export type Word = TilePosition[];
 
+enum Orientation {
+    Horizontal,
+    Vertical,
+    Discontinuous
+}
+
+const wordOrientation = (word: Word, size: number) => {
+    let rowCounts = new Array<number>(size);
+    let columnCounts = new Array<number>(size);
+    word.forEach(x => rowCounts[x.row]++);
+    word.forEach(x => columnCounts[x.column]++);
+    for (let i = 0; i < size; i++) {
+        if (rowCounts[i] === size) {
+            return Orientation.Horizontal;
+        }
+    }
+    for (let i = 0; i < size; i++) {
+        if (columnCounts[i] === size) {
+            return Orientation.Vertical;
+        }
+    }
+    return Orientation.Discontinuous;
+}
+
+const hasValidIndices = (word: Word, size: number) => {
+    let invalidRows = word.map(x => x.row).filter(x => x < 0 || x >= size);
+    let invalidColumns = word.map(x => x.column).filter(x => x < 0 || x >= size);
+    return invalidRows.length === 0 && invalidColumns.length === 0;
+}
+
+interface WordInternal {
+    word: Word,
+    orientation: Orientation
+}
+
+type WordList = WordInternal[];
+type IndexList = number[];
+
 export class Board {
     private cells: Cell[][];
     readonly size = 15;
+    private words: WordList;
+    private wordsPerCell: IndexList[][];
 
     constructor() {
         this.cells = new Array<Cell[]>(this.size);
@@ -38,7 +78,7 @@ export class Board {
                 if ((j === 3 || j === 11) && i === 7) this.cells[i][j] = new Cell(CellType.DoubleLetter);
             }
         }
-    
+
         for (let i = 1; i < this.size - 1; i++) {
             for (let j = 1; j < this.size - 1; j++) {
                 if (i === j || i + j === this.size - 1) {
@@ -49,7 +89,7 @@ export class Board {
                 }
             }
         }
-    
+
         this.cells[0][0] = new Cell(CellType.TripleWord);
         this.cells[0][Math.floor(this.size / 2)] = new Cell(CellType.TripleWord);
         this.cells[0][this.size - 1] = new Cell(CellType.TripleWord);
@@ -58,9 +98,37 @@ export class Board {
         this.cells[this.size - 1][0] = new Cell(CellType.TripleWord);
         this.cells[this.size - 1][Math.floor(this.size / 2)] = new Cell(CellType.TripleWord);
         this.cells[this.size - 1][this.size - 1] = new Cell(CellType.TripleWord);
+
+        this.words = [];
+        
+        this.wordsPerCell = new Array<IndexList[]>(this.size);
+        for (let i = 0; i < this.size; i++) {
+            this.wordsPerCell[i] = new Array<IndexList>(this.size);
+            for (let j = 0; j < this.size; j++) {
+                this.wordsPerCell[i][j] = [];
+            }
+        }
     }
 
     getCell(i: number, j: number) {
         return this.cells[i][j];
+    }
+
+    putWord(word: Word) {
+        if (word.length === 0) {
+            throw new Error('word must have non-zero length');
+        }
+        if (!hasValidIndices(word, this.size)) {
+            throw new Error('invalid indices in word');
+        }
+        let orientation = wordOrientation(word, this.size);
+        if (orientation === Orientation.Horizontal) {
+            let row = word[0].row;
+            let sortedWord = word.sort((a, b) => a.column - b.column);
+        } else if (orientation === Orientation.Vertical) {
+
+        } else {
+            
+        }
     }
 }
