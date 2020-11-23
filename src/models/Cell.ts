@@ -1,4 +1,4 @@
-import Tile from "./Tile";
+import Tile from './Tile';
 
 export enum CellState {
     Empty,
@@ -25,36 +25,36 @@ export class Cell {
         this._value = undefined;
     }
 
-    putTile(tile: Tile) {
+    putTile(tile: Tile): Cell {
         if (this.isFilled()) {
             throw new Error('cannot fill filled cell');
         }
-        let newCell = new Cell(this._type);
+        const newCell = new Cell(this._type);
         newCell._value = tile;
         newCell._state = CellState.Filled;
         return newCell;
     }
 
-    isFilled() {
+    isFilled(): boolean {
         return this._state === CellState.Filled;
     }
 
-    removeTile() {
+    removeTile(): Cell {
         if (!this.isFilled()) {
             throw new Error('cannot empty empty cell');
         }
         return new Cell(this._type);
     }
 
-    get state() {
+    get state(): CellState {
         return this._state;
     }
 
-    get value() {
+    get value(): Tile | undefined {
         return this._value;
     }
 
-    get type() {
+    get type(): CellType {
         return this._type;
     }
 }

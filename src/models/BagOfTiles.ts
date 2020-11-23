@@ -1,4 +1,4 @@
-import Tile from "./Tile";
+import Tile from './Tile';
 import shuffle from 'shuffle-array';
 
 export default class BagOfTiles {
@@ -7,9 +7,9 @@ export default class BagOfTiles {
     constructor(empty: boolean) {
         this.tiles = [];
         if (!empty) {
-            for (let info of initialBagInfo) {
+            for (const info of initialBagInfo) {
                 for (let i = 0; i < info.count; i++) {
-                    let tile = new Tile(info.point, info.letter);
+                    const tile = new Tile(info.point, info.letter);
                     this.tiles.push(tile);
                 }
             }
@@ -17,12 +17,12 @@ export default class BagOfTiles {
     }
 
     private fromTiles(tiles: Tile[]) {
-        let bag = new BagOfTiles(false);
+        const bag = new BagOfTiles(false);
         bag.tiles = tiles;
         return bag;
     }
 
-    get tileCount() {
+    get tileCount(): number {
         return this.tiles.length;
     }
 
@@ -33,13 +33,13 @@ export default class BagOfTiles {
         if (count > this.tiles.length) {
             throw new Error('insufficient tiles');
         }
-        let shuffledTiles = shuffle(this.tiles);
-        let returnedTiles = shuffledTiles.slice(-count);
-        let remainingTiles = shuffledTiles.slice(0, shuffledTiles.length - count);
+        const shuffledTiles = shuffle(this.tiles);
+        const returnedTiles = shuffledTiles.slice(-count);
+        const remainingTiles = shuffledTiles.slice(0, shuffledTiles.length - count);
         return [
             returnedTiles,
             this.fromTiles(remainingTiles)
-        ]
+        ];
     }
 
     returnTiles(tiles: Tile[]): BagOfTiles {

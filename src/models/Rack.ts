@@ -1,4 +1,4 @@
-import Tile from "./Tile";
+import Tile from './Tile';
 
 export default class Rack {
     private tiles: Tile[];
@@ -8,12 +8,12 @@ export default class Rack {
     }
 
     private fromTiles(tiles: Tile[]) {
-        let rack = new Rack();
+        const rack = new Rack();
         rack.tiles = tiles;
         return rack;
     }
 
-    atIndex(idx: number) {
+    atIndex(idx: number): Tile {
         if (idx < 0 || idx > this.tiles.length) {
             throw new Error('index out of bounds');
         } else {
@@ -21,17 +21,17 @@ export default class Rack {
         }
     }
 
-    removeAt(idx: number) {
+    removeAt(idx: number): Rack {
         if (idx < 0 || idx > this.tiles.length) {
             throw new Error('index out of bounds');
         } else {
-            let newTiles = this.tiles.slice();
+            const newTiles = this.tiles.slice();
             newTiles.splice(idx, 1);
             return this.fromTiles(newTiles);
         }
     }
 
-    add(tiles: Tile[]) {
+    add(tiles: Tile[]): Rack {
         if (this.tiles.length + tiles.length > 7) {
             throw new Error('adding these tiles will exceed capacity of rack');
         }
@@ -40,22 +40,22 @@ export default class Rack {
         return this.fromTiles(newTiles);
     }
 
-    swap(idx1: number, idx2: number) {
+    swap(idx1: number, idx2: number): Rack {
         if (idx1 < 0 && idx2 < 0 && idx1 >= this.tiles.length && idx2 >= this.tiles.length) {
             throw new Error('index out of bounds');
         }
-        let newTiles = this.tiles.slice();
-        let tmp = newTiles[idx1];
+        const newTiles = this.tiles.slice();
+        const tmp = newTiles[idx1];
         newTiles[idx1] = newTiles[idx2];
         newTiles[idx2] = tmp;
         return this.fromTiles(newTiles);
     }
 
-    currentTiles() {
+    currentTiles(): Tile[] {
         return this.tiles.slice();
     }
 
-    get length() {
+    get length(): number {
         return this.tiles.length;
     }
 }
