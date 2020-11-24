@@ -139,7 +139,7 @@ export class Board {
         const orientation = wordOrientation(word, this.size);
         if (orientation === Orientation.Horizontal) {
             const row = word[0].row;
-            const sortedWord = word.sort((a, b) => a.column - b.column);
+            const sortedWord = word.slice().sort((a, b) => a.column - b.column);
             const minCol = sortedWord[0].column;
             const maxCol = sortedWord[sortedWord.length - 1].column;
 
@@ -183,7 +183,7 @@ export class Board {
                         for (let i = 0; i < word.length; i++) {
                             sortedWord.push(word[i]);
                         }
-                        endCol = word[word.length].column;
+                        endCol = word[word.length - 1].column;
                     }
                 } else {
                     const tile = this.cells[row][maxCol + 1].value;
