@@ -11,7 +11,7 @@ test('Empty board', () => {
     }
 });
 
-test('First word from center', () => {
+test('Horizontal, First word from center', () => {
     const board = new Board();
     const givenWord: Word = [
         { tile: new Tile(4, 'H'), row: 7, column: 7 },
@@ -32,7 +32,7 @@ test('First word from center', () => {
     expect(finalWord[4]).toStrictEqual({ tile: new Tile(1, 'O'), row: 7, column: 11 });
 });
 
-test('Left horizontal', () => {
+test('Horizontal, Left horizontal', () => {
     const board = new Board();
     const leftWord: Word = [
         { tile: new Tile(4, 'W'), row: 7, column: 7 },
@@ -60,7 +60,7 @@ test('Left horizontal', () => {
     expect(finalWord[5]).toStrictEqual({ tile: new Tile(1, 'R'), row: 7, column: 12 });
 });
 
-test('Right horizontal', () => {
+test('Horizontal, Right horizontal', () => {
     const board = new Board();
     const rightWord: Word = [
         { tile: new Tile(4, 'V'), row: 7, column: 7 },
@@ -84,4 +84,79 @@ test('Right horizontal', () => {
     expect(finalWord[2]).toStrictEqual({ tile: new Tile(4, 'V'), row: 7, column: 7 });
     expect(finalWord[3]).toStrictEqual({ tile: new Tile(1, 'E'), row: 7, column: 8 });
     expect(finalWord[4]).toStrictEqual({ tile: new Tile(2, 'T'), row: 7, column: 9 });
+});
+
+test('Vertical, First word from center', () => {
+    const board = new Board();
+    const givenWord: Word = [
+        { tile: new Tile(4, 'H'), row: 7, column: 7 },
+        { tile: new Tile(1, 'E'), row: 8, column: 7 },
+        { tile: new Tile(1, 'L'), row: 9, column: 7 },
+        { tile: new Tile(1, 'L'), row: 10, column: 7 },
+        { tile: new Tile(1, 'O'), row: 11, column: 7 },
+    ];
+    const [finalWord, finalBoard] = board.putWord(givenWord);
+    for (const char of givenWord) {
+        expect(finalBoard.getCell(char.row, char.column).value).toStrictEqual(char.tile);
+    }
+    expect(finalWord.length).toEqual(givenWord.length);
+    expect(finalWord[0]).toStrictEqual({ tile: new Tile(4, 'H'), row: 7, column: 7 });
+    expect(finalWord[1]).toStrictEqual({ tile: new Tile(1, 'E'), row: 8, column: 7 });
+    expect(finalWord[2]).toStrictEqual({ tile: new Tile(1, 'L'), row: 9, column: 7 });
+    expect(finalWord[3]).toStrictEqual({ tile: new Tile(1, 'L'), row: 10, column: 7 });
+    expect(finalWord[4]).toStrictEqual({ tile: new Tile(1, 'O'), row: 11, column: 7 });
+});
+
+test('Vertical, Top vertical', () => {
+    const board = new Board();
+    const topWord: Word = [
+        { tile: new Tile(4, 'W'), row: 7, column: 7 },
+        { tile: new Tile(1, 'I'), row: 8, column: 7 },
+        { tile: new Tile(2, 'N'), row: 9, column: 7 },
+    ];
+    const [firstWord, interimBoard] = board.putWord(topWord);
+    expect(topWord.length).toEqual(3);
+    const givenWord: Word = [
+        { tile: new Tile(1, 'T'), row: 10, column: 7 },
+        { tile: new Tile(1, 'E'), row: 11, column: 7 },
+        { tile: new Tile(1, 'R'), row: 12, column: 7 },
+    ];
+    const [finalWord, finalBoard] = interimBoard.putWord(givenWord);
+    for (const char of givenWord) {
+        expect(finalBoard.getCell(char.row, char.column).value).toStrictEqual(char.tile);
+    }
+    expect(finalWord.length).toEqual(6);
+    expect(givenWord.length).toEqual(3);
+    expect(finalWord[0]).toStrictEqual({ tile: new Tile(4, 'W'), row: 7, column: 7 });
+    expect(finalWord[1]).toStrictEqual({ tile: new Tile(1, 'I'), row: 8, column: 7 });
+    expect(finalWord[2]).toStrictEqual({ tile: new Tile(2, 'N'), row: 9, column: 7 });
+    expect(finalWord[3]).toStrictEqual({ tile: new Tile(1, 'T'), row: 10, column: 7 });
+    expect(finalWord[4]).toStrictEqual({ tile: new Tile(1, 'E'), row: 11, column: 7 });
+    expect(finalWord[5]).toStrictEqual({ tile: new Tile(1, 'R'), row: 12, column: 7 });
+});
+
+test('Vertical, Bottom vertical', () => {
+    const board = new Board();
+    const bottomWord: Word = [
+        { tile: new Tile(4, 'V'), row: 7, column: 7 },
+        { tile: new Tile(1, 'E'), row: 8, column: 7 },
+        { tile: new Tile(2, 'T'), row: 9, column: 7 },
+    ];
+    const [firstWord, interimBoard] = board.putWord(bottomWord);
+    expect(bottomWord.length).toEqual(3);
+    const givenWord: Word = [
+        { tile: new Tile(3, 'C'), row: 5, column: 7 },
+        { tile: new Tile(1, 'U'), row: 6, column: 7 },
+    ];
+    const [finalWord, finalBoard] = interimBoard.putWord(givenWord);
+    for (const char of givenWord) {
+        expect(finalBoard.getCell(char.row, char.column).value).toStrictEqual(char.tile);
+    }
+    expect(finalWord.length).toEqual(5);
+    expect(givenWord.length).toEqual(2);
+    expect(finalWord[0]).toStrictEqual({ tile: new Tile(3, 'C'), row: 5, column: 7 });
+    expect(finalWord[1]).toStrictEqual({ tile: new Tile(1, 'U'), row: 6, column: 7 });
+    expect(finalWord[2]).toStrictEqual({ tile: new Tile(4, 'V'), row: 7, column: 7 });
+    expect(finalWord[3]).toStrictEqual({ tile: new Tile(1, 'E'), row: 8, column: 7 });
+    expect(finalWord[4]).toStrictEqual({ tile: new Tile(2, 'T'), row: 9, column: 7 });
 });

@@ -212,7 +212,7 @@ export class Board {
             const col = word[0].column;
             const sortedWord = word.slice().sort((a, b) => a.row - b.row);
             const minRow = sortedWord[0].row;
-            const maxRow = sortedWord[sortedWord.length - 1].column;
+            const maxRow = sortedWord[sortedWord.length - 1].row;
 
             const hasTop = minRow > 0 && this.cells[minRow - 1][col].isFilled();
             const hasBottom = maxRow < this.size - 1 && this.cells[maxRow + 1][col].isFilled();
