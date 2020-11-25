@@ -130,6 +130,7 @@ export class Board {
         // TODO: Also calculate the points in addition to the new board state
         // TODO: Add handling for erroneous placements
         // TODO: Word must touch previous word
+        // TODO: Words crossing
         if (word.length === 0) {
             throw new Error('word must have non-zero length');
         }
@@ -188,7 +189,7 @@ export class Board {
                 } else {
                     const tile = this.cells[row][maxCol + 1].value;
                     if (tile != undefined) {
-                        sortedWord.unshift({
+                        sortedWord.push({
                             row: row,
                             column: maxCol + 1,
                             tile: tile
@@ -202,15 +203,81 @@ export class Board {
             for (const char of sortedWord) {
                 newBoard.cells[char.row][char.column] = new Cell(newBoard.cells[char.row][char.column].type).putTile(char.tile);
             }
-            for (let i = startCol; i <= endCol; i++)  {
+            for (let i = startCol; i <= endCol; i++) {
                 newBoard.wordsPerCell[row][i].horizontal = sortedWord;
             }
-            
-            const newWord = sortedWord.slice();
 
-            return [newWord, newBoard];
+            return [sortedWord, newBoard];
         } else if (orientation === Orientation.Vertical) {
-            throw new Error('unimplemented');
+            const col = word[0].column;
+            const sortedWord = word.slice().sort((a, b) => a.row - b.row);
+            const minRow = sortedWord[0].row;
+            const maxRow = sortedWord[sortedWord.length - 1].column;
+
+            const hasTop = minRow > 0 && this.cells[minRow - 1][col].isFilled();
+            const hasBottom = maxRow < this.size - 1 && this.cells[maxRow + 1][col].isFilled();
+
+            let topOrientation = Orientation.None, bottomOrientation = Orientation.None;
+            if (hasTop) {
+                topOrientation = this.wordsPerCell[minRow - 1][col].vertical === undefined ? Orientation.Horizontal : Orientation.Vertical;
+            }
+            if (hasBottom) {
+                bottomOrientation = this.wordsPerCell[maxRow + 1][col].vertical === undefined ? Orientation.Horizontal : Orientation.Vertical;
+            }
+
+            let startRow = minRow, endRow = maxRow;
+            if (hasTop) {
+                if (topOrientation === Orientation.Vertical) {
+                    const word = this.wordsPerCell[minRow - 1][col].vertical;
+                    if (word !== undefined) {
+                        for (let i = word.length - 1; i >= 0; i--) {
+                            sortedWord.unshift(word[i]);
+                        }
+                        startRow = word[0].row;
+                    }
+                } else {
+                    const tile = this.cells[minRow - 1][col].value;
+                    if (tile != undefined) {
+                        sortedWord.unshift({
+                            row: minRow - 1,
+                            column: col,
+                            tile: tile
+                        });
+                    }
+                    startRow--;
+                }
+            }
+            if (hasBottom) {
+                if (bottomOrientation === Orientation.Vertical) {
+                    const word = this.wordsPerCell[maxRow + 1][col].vertical;
+                    if (word !== undefined) {
+                        for (let i = 0; i < word.length; i++) {
+                            sortedWord.push(word[i]);
+                        }
+                        endRow = word[word.length - 1].row;
+                    }
+                } else {
+                    const tile = this.cells[maxRow + 1][col].value;
+                    if (tile != undefined) {
+                        sortedWord.push({
+                            row: maxRow + 1,
+                            column: col,
+                            tile: tile
+                        });
+                    }
+                    endRow++;
+                }
+            }
+
+            const newBoard = this.clone();
+            for (const char of sortedWord) {
+                newBoard.cells[char.row][char.column] = new Cell(newBoard.cells[char.row][char.column].type).putTile(char.tile);
+            }
+            for (let i = startRow; i <= endRow; i++) {
+                newBoard.wordsPerCell[i][col].vertical = sortedWord;
+            }
+
+            return [sortedWord, newBoard];
         } else if (orientation === Orientation.Discontinuous) {
             throw new Error('unimplemented');
         }
