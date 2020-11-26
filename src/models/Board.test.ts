@@ -348,3 +348,15 @@ test('Vertical, Not touching anything else', () => {
     ];
     expect(() => interimBoard.putWord(givenWord)).toThrow();
 });
+
+test('First word must start at center', () => {
+    const board = new Board();
+    const givenWord: Word = [
+        { tile: new Tile(4, 'H'), row: 7, column: 6 },
+        { tile: new Tile(1, 'E'), row: 7, column: 7 },
+        { tile: new Tile(1, 'L'), row: 7, column: 8 },
+        { tile: new Tile(1, 'L'), row: 7, column: 9 },
+        { tile: new Tile(1, 'O'), row: 7, column: 10 },
+    ];
+    expect(() => board.putWord(givenWord)).toThrow();
+});

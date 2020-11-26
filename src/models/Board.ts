@@ -227,6 +227,10 @@ export class Board {
             const minCol = sortedPartialWord[0].column;
             const maxCol = sortedPartialWord[sortedPartialWord.length - 1].column;
 
+            if (this.completelyEmpty && (minCol != 7 || row != 7)) {
+                throw new Error('First word must begin at center');
+            }
+
             const hasLeft = minCol > 0 && this.cells[row][minCol - 1].isFilled();
             const hasRight = maxCol < this.size - 1 && this.cells[row][maxCol + 1].isFilled();
 
@@ -324,6 +328,10 @@ export class Board {
             const sortedPartialWord = word.slice().sort((a, b) => a.row - b.row);
             const minRow = sortedPartialWord[0].row;
             const maxRow = sortedPartialWord[sortedPartialWord.length - 1].row;
+
+            if (this.completelyEmpty && (minRow != 7 || col != 7)) {
+                throw new Error('First word must begin at center');
+            }
 
             const hasTop = minRow > 0 && this.cells[minRow - 1][col].isFilled();
             const hasBottom = maxRow < this.size - 1 && this.cells[maxRow + 1][col].isFilled();
