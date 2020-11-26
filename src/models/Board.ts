@@ -34,13 +34,83 @@ const wordOrientation = (word: Word, size: number) => {
             return Orientation.Vertical;
         }
     }
-    return Orientation.Discontinuous;
+    return Orientation.None;
 };
 
 const hasValidIndices = (word: Word, size: number) => {
     const invalidRows = word.map(x => x.row).filter(x => x < 0 || x >= size);
     const invalidColumns = word.map(x => x.column).filter(x => x < 0 || x >= size);
     return invalidRows.length === 0 && invalidColumns.length === 0;
+};
+
+const findGaps = (sortedWord: Word, orientation: Orientation) => {
+    if (orientation == Orientation.Horizontal) {
+        const gaps = new Array<[number, number]>();
+        const row = sortedWord[0].row;
+        const minCol = sortedWord[0].column;
+        const maxCol = sortedWord[sortedWord.length - 1].column;
+        for (let i = minCol, pos = 0; i <= maxCol; i++) {
+            const char = sortedWord[pos];
+            if (char.column == i) {
+                pos++;
+            } else {
+                gaps.push([row, i]);
+            }
+        }
+        return gaps;
+    } else if (orientation == Orientation.Vertical) {
+        const gaps = new Array<[number, number]>();
+        const col = sortedWord[0].column;
+        const minRow = sortedWord[0].row;
+        const maxRow = sortedWord[sortedWord.length - 1].row;
+        for (let i = minRow, pos = 0; i <= maxRow; i++) {
+            const char = sortedWord[pos];
+            if (char.row == i) {
+                pos++;
+            } else {
+                gaps.push([i, col]);
+            }
+        }
+        return gaps;
+    } else {
+        throw new Error('cannot find gaps for this Orientation');
+    }
+};
+
+const mergeSortedWords = (word1: Word, word2: Word, orientation: Orientation) => {
+    const word: Word = [];
+    let idx1 = 0, idx2 = 0;
+    while (idx1 < word1.length || idx2 < word2.length) {
+        if (idx1 < word1.length && idx2 < word2.length) {
+            const char1 = word1[idx1], char2 = word2[idx2];
+            if (orientation === Orientation.Horizontal) {
+                if (char1.column < char2.column) {
+                    word.push(char1);
+                    idx1++;
+                } else {
+                    word.push(char2);
+                    idx2++;
+                }
+            } else if (orientation === Orientation.Vertical) {
+                if (char1.row < char2.row) {
+                    word.push(char1);
+                    idx1++;
+                } else {
+                    word.push(char2);
+                    idx2++;
+                }
+            } else {
+                throw new Error('incompatible words');
+            }
+        } else if (idx1 < word1.length) {
+            word.push(word1[idx1]);
+            idx1++;
+        } else if (idx2 < word2.length) {
+            word.push(word2[idx2]);
+            idx2++;
+        }
+    }
+    return word;
 };
 
 interface CellWords {
@@ -126,23 +196,34 @@ export class Board {
         return newBoard;
     }
 
+    private checkIfCellsAreEmpty(word: Word) {
+        for (const char of word) {
+            if (this.cells[char.row][char.column].isFilled()) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     putWord(word: Word): [Word, Board] {
         // TODO: Also calculate the points in addition to the new board state
         // TODO: Add handling for erroneous placements
         // TODO: Word must touch previous word
-        // TODO: Words crossing
         if (word.length === 0) {
             throw new Error('word must have non-zero length');
         }
         if (!hasValidIndices(word, this.size)) {
             throw new Error('invalid indices in word');
         }
+        if (!this.checkIfCellsAreEmpty(word)) {
+            throw new Error('tiles placed on cells already occupied');
+        }
         const orientation = wordOrientation(word, this.size);
         if (orientation === Orientation.Horizontal) {
             const row = word[0].row;
-            const sortedWord = word.slice().sort((a, b) => a.column - b.column);
-            const minCol = sortedWord[0].column;
-            const maxCol = sortedWord[sortedWord.length - 1].column;
+            const sortedPartialWord = word.slice().sort((a, b) => a.column - b.column);
+            const minCol = sortedPartialWord[0].column;
+            const maxCol = sortedPartialWord[sortedPartialWord.length - 1].column;
 
             const hasLeft = minCol > 0 && this.cells[row][minCol - 1].isFilled();
             const hasRight = maxCol < this.size - 1 && this.cells[row][maxCol + 1].isFilled();
@@ -153,6 +234,29 @@ export class Board {
             }
             if (hasRight) {
                 rightOrientation = this.wordsPerCell[row][maxCol + 1].horizontal === undefined ? Orientation.Vertical : Orientation.Horizontal;
+            }
+
+            const gaps = findGaps(sortedPartialWord, orientation);
+            let sortedWord: Word;
+            if (gaps.length !== 0) {
+                const wordFromGap: Word = [];
+                for (const [row, column] of gaps) {
+                    if (!this.cells[row][column].isFilled()) {
+                        throw new Error('unfilled gaps in word');
+                    } else {
+                        const value = this.cells[row][column].value;
+                        if (value !== undefined) {
+                            wordFromGap.push({
+                                row: row,
+                                column: column,
+                                tile: value
+                            });
+                        }
+                    }
+                }
+                sortedWord = mergeSortedWords(sortedPartialWord, wordFromGap, orientation);
+            } else {
+                sortedWord = sortedPartialWord;
             }
 
             let startCol = minCol, endCol = maxCol;
@@ -167,7 +271,7 @@ export class Board {
                     }
                 } else {
                     const tile = this.cells[row][minCol - 1].value;
-                    if (tile != undefined) {
+                    if (tile !== undefined) {
                         sortedWord.unshift({
                             row: row,
                             column: minCol - 1,
@@ -188,7 +292,7 @@ export class Board {
                     }
                 } else {
                     const tile = this.cells[row][maxCol + 1].value;
-                    if (tile != undefined) {
+                    if (tile !== undefined) {
                         sortedWord.push({
                             row: row,
                             column: maxCol + 1,
@@ -210,9 +314,9 @@ export class Board {
             return [sortedWord, newBoard];
         } else if (orientation === Orientation.Vertical) {
             const col = word[0].column;
-            const sortedWord = word.slice().sort((a, b) => a.row - b.row);
-            const minRow = sortedWord[0].row;
-            const maxRow = sortedWord[sortedWord.length - 1].row;
+            const sortedPartialWord = word.slice().sort((a, b) => a.row - b.row);
+            const minRow = sortedPartialWord[0].row;
+            const maxRow = sortedPartialWord[sortedPartialWord.length - 1].row;
 
             const hasTop = minRow > 0 && this.cells[minRow - 1][col].isFilled();
             const hasBottom = maxRow < this.size - 1 && this.cells[maxRow + 1][col].isFilled();
@@ -223,6 +327,29 @@ export class Board {
             }
             if (hasBottom) {
                 bottomOrientation = this.wordsPerCell[maxRow + 1][col].vertical === undefined ? Orientation.Horizontal : Orientation.Vertical;
+            }
+
+            const gaps = findGaps(sortedPartialWord, orientation);
+            let sortedWord: Word;
+            if (gaps.length !== 0) {
+                const wordFromGap: Word = [];
+                for (const [row, column] of gaps) {
+                    if (!this.cells[row][column].isFilled()) {
+                        throw new Error('unfilled gaps in word');
+                    } else {
+                        const value = this.cells[row][column].value;
+                        if (value !== undefined) {
+                            wordFromGap.push({
+                                row: row,
+                                column: column,
+                                tile: value
+                            });
+                        }
+                    }
+                }
+                sortedWord = mergeSortedWords(sortedPartialWord, wordFromGap, orientation);
+            } else {
+                sortedWord = sortedPartialWord;
             }
 
             let startRow = minRow, endRow = maxRow;
@@ -237,7 +364,7 @@ export class Board {
                     }
                 } else {
                     const tile = this.cells[minRow - 1][col].value;
-                    if (tile != undefined) {
+                    if (tile !== undefined) {
                         sortedWord.unshift({
                             row: minRow - 1,
                             column: col,
@@ -258,7 +385,7 @@ export class Board {
                     }
                 } else {
                     const tile = this.cells[maxRow + 1][col].value;
-                    if (tile != undefined) {
+                    if (tile !== undefined) {
                         sortedWord.push({
                             row: maxRow + 1,
                             column: col,
@@ -278,8 +405,6 @@ export class Board {
             }
 
             return [sortedWord, newBoard];
-        } else if (orientation === Orientation.Discontinuous) {
-            throw new Error('unimplemented');
         }
         throw new Error('unimplemented');
     }
