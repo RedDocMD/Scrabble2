@@ -160,6 +160,24 @@ test('Horizontal, Crossing vertical', () => {
     expect(finalWord[2]).toStrictEqual({ tile: new Tile(2, 'T'), row: 8, column: 8 });
 });
 
+test('Horizontal, Not touching anything else', () => {
+    const board = new Board();
+    const rightWord: Word = [
+        { tile: new Tile(4, 'V'), row: 7, column: 7 },
+        { tile: new Tile(1, 'E'), row: 7, column: 8 },
+        { tile: new Tile(2, 'T'), row: 7, column: 9 },
+    ];
+    const [firstWord, interimBoard] = board.putWord(rightWord);
+    expect(rightWord.length).toEqual(3);
+    const givenWord: Word = [
+        { tile: new Tile(3, 'C'), row: 11, column: 5 },
+        { tile: new Tile(1, 'U'), row: 11, column: 6 },
+        { tile: new Tile(1, 'T'), row: 11, column: 7 },
+        { tile: new Tile(1, 'E'), row: 11, column: 8 },
+    ];
+    expect(() => interimBoard.putWord(givenWord)).toThrow();
+});
+
 test('Vertical, First word from center', () => {
     const board = new Board();
     const givenWord: Word = [
@@ -311,4 +329,22 @@ test('Vertical, Crossing horizontal', () => {
     expect(finalWord[0]).toStrictEqual({ tile: new Tile(4, 'V'), row: 6, column: 8 });
     expect(finalWord[1]).toStrictEqual({ tile: new Tile(1, 'E'), row: 7, column: 8 });
     expect(finalWord[2]).toStrictEqual({ tile: new Tile(2, 'T'), row: 8, column: 8 });
+});
+
+test('Vertical, Not touching anything else', () => {
+    const board = new Board();
+    const rightWord: Word = [
+        { tile: new Tile(4, 'V'), row: 7, column: 7 },
+        { tile: new Tile(1, 'E'), row: 8, column: 7 },
+        { tile: new Tile(2, 'T'), row: 9, column: 7 },
+    ];
+    const [firstWord, interimBoard] = board.putWord(rightWord);
+    expect(rightWord.length).toEqual(3);
+    const givenWord: Word = [
+        { tile: new Tile(3, 'C'), row: 5, column: 11 },
+        { tile: new Tile(1, 'U'), row: 6, column: 11 },
+        { tile: new Tile(1, 'T'), row: 7, column: 11 },
+        { tile: new Tile(1, 'E'), row: 8, column: 11 },
+    ];
+    expect(() => interimBoard.putWord(givenWord)).toThrow();
 });

@@ -122,6 +122,7 @@ export class Board {
     private cells: Cell[][];
     readonly size = 15;
     private wordsPerCell: CellWords[][];
+    private completelyEmpty: boolean;
 
     constructor() {
         this.cells = new Array<Cell[]>(this.size);
@@ -179,6 +180,8 @@ export class Board {
                 };
             }
         }
+
+        this.completelyEmpty = true;
     }
 
     getCell(i: number, j: number): Cell {
@@ -208,7 +211,6 @@ export class Board {
     putWord(word: Word): [Word, Board] {
         // TODO: Also calculate the points in addition to the new board state
         // TODO: Add handling for erroneous placements
-        // TODO: Word must touch previous word
         if (word.length === 0) {
             throw new Error('word must have non-zero length');
         }
@@ -257,6 +259,10 @@ export class Board {
                 sortedWord = mergeSortedWords(sortedPartialWord, wordFromGap, orientation);
             } else {
                 sortedWord = sortedPartialWord;
+            }
+
+            if (!hasLeft && !hasRight && gaps.length === 0 && !this.completelyEmpty) {
+                throw new Error('word must be flanked by some other word');
             }
 
             let startCol = minCol, endCol = maxCol;
@@ -311,6 +317,7 @@ export class Board {
                 newBoard.wordsPerCell[row][i].horizontal = sortedWord;
             }
 
+            newBoard.completelyEmpty = false;
             return [sortedWord, newBoard];
         } else if (orientation === Orientation.Vertical) {
             const col = word[0].column;
@@ -350,6 +357,10 @@ export class Board {
                 sortedWord = mergeSortedWords(sortedPartialWord, wordFromGap, orientation);
             } else {
                 sortedWord = sortedPartialWord;
+            }
+
+            if (!hasTop && !hasBottom && gaps.length === 0 && !this.completelyEmpty) {
+                throw new Error('word must be flanked by some other word');
             }
 
             let startRow = minRow, endRow = maxRow;
@@ -404,6 +415,7 @@ export class Board {
                 newBoard.wordsPerCell[i][col].vertical = sortedWord;
             }
 
+            newBoard.completelyEmpty = false;
             return [sortedWord, newBoard];
         }
         throw new Error('unimplemented');
