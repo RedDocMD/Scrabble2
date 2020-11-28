@@ -52,9 +52,9 @@ test('Horizontal, Left horizontal', () => {
     }
     expect(finalWord.length).toEqual(6);
     expect(givenWord.length).toEqual(3);
-    expect(finalWord[0]).toStrictEqual({ tile: new Tile(4, 'W'), row: 7, column: 7 });
-    expect(finalWord[1]).toStrictEqual({ tile: new Tile(1, 'I'), row: 7, column: 8 });
-    expect(finalWord[2]).toStrictEqual({ tile: new Tile(2, 'N'), row: 7, column: 9 });
+    expect(finalWord[0]).toStrictEqual({ tile: new Tile(-1, 'W'), row: 7, column: 7 });
+    expect(finalWord[1]).toStrictEqual({ tile: new Tile(-1, 'I'), row: 7, column: 8 });
+    expect(finalWord[2]).toStrictEqual({ tile: new Tile(-1, 'N'), row: 7, column: 9 });
     expect(finalWord[3]).toStrictEqual({ tile: new Tile(1, 'T'), row: 7, column: 10 });
     expect(finalWord[4]).toStrictEqual({ tile: new Tile(1, 'E'), row: 7, column: 11 });
     expect(finalWord[5]).toStrictEqual({ tile: new Tile(1, 'R'), row: 7, column: 12 });
@@ -81,9 +81,9 @@ test('Horizontal, Right horizontal', () => {
     expect(givenWord.length).toEqual(2);
     expect(finalWord[0]).toStrictEqual({ tile: new Tile(3, 'C'), row: 7, column: 5 });
     expect(finalWord[1]).toStrictEqual({ tile: new Tile(1, 'U'), row: 7, column: 6 });
-    expect(finalWord[2]).toStrictEqual({ tile: new Tile(4, 'V'), row: 7, column: 7 });
-    expect(finalWord[3]).toStrictEqual({ tile: new Tile(1, 'E'), row: 7, column: 8 });
-    expect(finalWord[4]).toStrictEqual({ tile: new Tile(2, 'T'), row: 7, column: 9 });
+    expect(finalWord[2]).toStrictEqual({ tile: new Tile(-1, 'V'), row: 7, column: 7 });
+    expect(finalWord[3]).toStrictEqual({ tile: new Tile(-1, 'E'), row: 7, column: 8 });
+    expect(finalWord[4]).toStrictEqual({ tile: new Tile(-1, 'T'), row: 7, column: 9 });
 });
 
 test('Horizontal, Left vertical', () => {
@@ -106,7 +106,7 @@ test('Horizontal, Left vertical', () => {
     }
     expect(finalWord.length).toEqual(4);
     expect(givenWord.length).toEqual(3);
-    expect(finalWord[0]).toStrictEqual({ tile: new Tile(2, 'N'), row: 9, column: 7 });
+    expect(finalWord[0]).toStrictEqual({ tile: new Tile(-1, 'N'), row: 9, column: 7 });
     expect(finalWord[1]).toStrictEqual({ tile: new Tile(1, 'E'), row: 9, column: 8 });
     expect(finalWord[2]).toStrictEqual({ tile: new Tile(1, 'R'), row: 9, column: 9 });
     expect(finalWord[3]).toStrictEqual({ tile: new Tile(2, 'D'), row: 9, column: 10 });
@@ -133,7 +133,7 @@ test('Horizontal, Right vertical', () => {
     expect(givenWord.length).toEqual(2);
     expect(finalWord[0]).toStrictEqual({ tile: new Tile(3, 'C'), row: 8, column: 5 });
     expect(finalWord[1]).toStrictEqual({ tile: new Tile(1, 'U'), row: 8, column: 6 });
-    expect(finalWord[2]).toStrictEqual({ tile: new Tile(1, 'E'), row: 8, column: 7 });
+    expect(finalWord[2]).toStrictEqual({ tile: new Tile(-1, 'E'), row: 8, column: 7 });
 });
 
 test('Horizontal, Crossing vertical', () => {
@@ -156,7 +156,7 @@ test('Horizontal, Crossing vertical', () => {
     expect(finalWord.length).toEqual(3);
     expect(givenWord.length).toEqual(2);
     expect(finalWord[0]).toStrictEqual({ tile: new Tile(4, 'V'), row: 8, column: 6 });
-    expect(finalWord[1]).toStrictEqual({ tile: new Tile(1, 'E'), row: 8, column: 7 });
+    expect(finalWord[1]).toStrictEqual({ tile: new Tile(-1, 'E'), row: 8, column: 7 });
     expect(finalWord[2]).toStrictEqual({ tile: new Tile(2, 'T'), row: 8, column: 8 });
 });
 
@@ -219,9 +219,9 @@ test('Vertical, Top vertical', () => {
     }
     expect(finalWord.length).toEqual(6);
     expect(givenWord.length).toEqual(3);
-    expect(finalWord[0]).toStrictEqual({ tile: new Tile(4, 'W'), row: 7, column: 7 });
-    expect(finalWord[1]).toStrictEqual({ tile: new Tile(1, 'I'), row: 8, column: 7 });
-    expect(finalWord[2]).toStrictEqual({ tile: new Tile(2, 'N'), row: 9, column: 7 });
+    expect(finalWord[0]).toStrictEqual({ tile: new Tile(-1, 'W'), row: 7, column: 7 });
+    expect(finalWord[1]).toStrictEqual({ tile: new Tile(-1, 'I'), row: 8, column: 7 });
+    expect(finalWord[2]).toStrictEqual({ tile: new Tile(-1, 'N'), row: 9, column: 7 });
     expect(finalWord[3]).toStrictEqual({ tile: new Tile(1, 'T'), row: 10, column: 7 });
     expect(finalWord[4]).toStrictEqual({ tile: new Tile(1, 'E'), row: 11, column: 7 });
     expect(finalWord[5]).toStrictEqual({ tile: new Tile(1, 'R'), row: 12, column: 7 });
@@ -248,9 +248,9 @@ test('Vertical, Bottom vertical', () => {
     expect(givenWord.length).toEqual(2);
     expect(finalWord[0]).toStrictEqual({ tile: new Tile(3, 'C'), row: 5, column: 7 });
     expect(finalWord[1]).toStrictEqual({ tile: new Tile(1, 'U'), row: 6, column: 7 });
-    expect(finalWord[2]).toStrictEqual({ tile: new Tile(4, 'V'), row: 7, column: 7 });
-    expect(finalWord[3]).toStrictEqual({ tile: new Tile(1, 'E'), row: 8, column: 7 });
-    expect(finalWord[4]).toStrictEqual({ tile: new Tile(2, 'T'), row: 9, column: 7 });
+    expect(finalWord[2]).toStrictEqual({ tile: new Tile(-1, 'V'), row: 7, column: 7 });
+    expect(finalWord[3]).toStrictEqual({ tile: new Tile(-1, 'E'), row: 8, column: 7 });
+    expect(finalWord[4]).toStrictEqual({ tile: new Tile(-1, 'T'), row: 9, column: 7 });
 });
 
 test('Vertical, Top horizontal', () => {
@@ -274,7 +274,7 @@ test('Vertical, Top horizontal', () => {
     }
     expect(finalWord.length).toEqual(5);
     expect(givenWord.length).toEqual(4);
-    expect(finalWord[0]).toStrictEqual({ tile: new Tile(1, 'I'), row: 7, column: 8 });
+    expect(finalWord[0]).toStrictEqual({ tile: new Tile(-1, 'I'), row: 7, column: 8 });
     expect(finalWord[1]).toStrictEqual({ tile: new Tile(2, 'N'), row: 8, column: 8 });
     expect(finalWord[2]).toStrictEqual({ tile: new Tile(1, 'T'), row: 9, column: 8 });
     expect(finalWord[3]).toStrictEqual({ tile: new Tile(1, 'E'), row: 10, column: 8 });
@@ -304,7 +304,7 @@ test('Vertical, Bottom horizontal', () => {
     expect(finalWord[0]).toStrictEqual({ tile: new Tile(3, 'C'), row: 4, column: 8 });
     expect(finalWord[1]).toStrictEqual({ tile: new Tile(1, 'U'), row: 5, column: 8 });
     expect(finalWord[2]).toStrictEqual({ tile: new Tile(2, 'T'), row: 6, column: 8 });
-    expect(finalWord[3]).toStrictEqual({ tile: new Tile(1, 'E'), row: 7, column: 8 });
+    expect(finalWord[3]).toStrictEqual({ tile: new Tile(-1, 'E'), row: 7, column: 8 });
 });
 
 test('Vertical, Crossing horizontal', () => {
@@ -327,7 +327,7 @@ test('Vertical, Crossing horizontal', () => {
     expect(finalWord.length).toEqual(3);
     expect(givenWord.length).toEqual(2);
     expect(finalWord[0]).toStrictEqual({ tile: new Tile(4, 'V'), row: 6, column: 8 });
-    expect(finalWord[1]).toStrictEqual({ tile: new Tile(1, 'E'), row: 7, column: 8 });
+    expect(finalWord[1]).toStrictEqual({ tile: new Tile(-1, 'E'), row: 7, column: 8 });
     expect(finalWord[2]).toStrictEqual({ tile: new Tile(2, 'T'), row: 8, column: 8 });
 });
 

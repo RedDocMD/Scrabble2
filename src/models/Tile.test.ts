@@ -18,12 +18,6 @@ test('Zero Points', () => {
     expect(tile.points).toBe(0);
 });
 
-test('Negative Points', () => {
-    expect(() => {
-        new Tile(-1, 'a');
-    }).toThrow('thePoints must be non-negative');
-});
-
 test('Non Letter', () => {
     expect(() => {
         new Tile(5, 'hello');

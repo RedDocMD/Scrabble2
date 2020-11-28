@@ -1,4 +1,4 @@
-import { Cell, CellType } from './Cell';
+import { Cell,  CellType } from './Cell';
 import Tile from './Tile';
 
 export interface TilePosition {
@@ -8,6 +8,14 @@ export interface TilePosition {
 }
 
 export type Word = TilePosition[];
+
+const negatedTilePosition = (pos: TilePosition): TilePosition => {
+    return {
+        row: pos.row,
+        column: pos.column,
+        tile: pos.tile.negated()
+    };
+};
 
 enum Orientation {
     Horizontal,
@@ -208,8 +216,64 @@ export class Board {
         return true;
     }
 
+    calculatePoints(word: Word): number {
+        let points = 0;
+        let doubleWord = 0, tripleWord = 0;
+        for (const char of word) {
+            const cell = this.cells[char.row][char.column];
+            const cellType = cell.type;
+            const tilePoints = char.tile.points;
+            switch (cellType) {
+            case CellType.Regular: {
+                points += Math.max(0, tilePoints);
+                break;
+            }
+            case CellType.DoubleLetter: {
+                points += Math.max(0, tilePoints) * 2;
+                break;
+            }
+            case CellType.TripleLetter: {
+                points += Math.max(0, tilePoints) * 3;
+                break;
+            }
+            case CellType.DoubleWord: {
+                points += Math.max(0, tilePoints);
+                if (tilePoints >= 0) doubleWord++;
+                break;
+            }
+            case CellType.TripleWord: {
+                points += Math.max(0, tilePoints);
+                if (tilePoints >= 0) tripleWord++;
+                break; 
+            }
+            case CellType.Center: {
+                points += Math.max(0, tilePoints);
+                if (tilePoints >= 0) doubleWord++;
+                break;
+            }
+            }
+        }
+        while (doubleWord > 0) {
+            points *= 2;
+            doubleWord--;
+        }
+        while (tripleWord > 0) {
+            points *= 3;
+            tripleWord--;
+        }
+        let newCount = 0;
+        for (const char of word) {
+            if (char.tile.points >= 0) {
+                newCount++;
+            }
+        }
+        if (newCount == 7) {
+            points += 50;
+        }
+        return points;
+    }
+
     putWord(word: Word): [Word, Board] {
-        // TODO: Also calculate the points in addition to the new board state
         // TODO: Add handling for erroneous placements
         if (word.length === 0) {
             throw new Error('word must have non-zero length');
@@ -255,7 +319,7 @@ export class Board {
                             wordFromGap.push({
                                 row: row,
                                 column: column,
-                                tile: value
+                                tile: value.negated()
                             });
                         }
                     }
@@ -275,7 +339,7 @@ export class Board {
                     const word = this.wordsPerCell[row][minCol - 1].horizontal;
                     if (word !== undefined) {
                         for (let i = word.length - 1; i >= 0; i--) {
-                            sortedWord.unshift(word[i]);
+                            sortedWord.unshift(negatedTilePosition(word[i]));
                         }
                         startCol = word[0].column;
                     }
@@ -285,7 +349,7 @@ export class Board {
                         sortedWord.unshift({
                             row: row,
                             column: minCol - 1,
-                            tile: tile
+                            tile: tile.negated()
                         });
                     }
                     startCol--;
@@ -296,7 +360,7 @@ export class Board {
                     const word = this.wordsPerCell[row][maxCol + 1].horizontal;
                     if (word !== undefined) {
                         for (let i = 0; i < word.length; i++) {
-                            sortedWord.push(word[i]);
+                            sortedWord.push(negatedTilePosition(word[i]));
                         }
                         endCol = word[word.length - 1].column;
                     }
@@ -306,7 +370,7 @@ export class Board {
                         sortedWord.push({
                             row: row,
                             column: maxCol + 1,
-                            tile: tile
+                            tile: tile.negated()
                         });
                     }
                     endCol++;
@@ -357,7 +421,7 @@ export class Board {
                             wordFromGap.push({
                                 row: row,
                                 column: column,
-                                tile: value
+                                tile: value.negated()
                             });
                         }
                     }
@@ -377,7 +441,7 @@ export class Board {
                     const word = this.wordsPerCell[minRow - 1][col].vertical;
                     if (word !== undefined) {
                         for (let i = word.length - 1; i >= 0; i--) {
-                            sortedWord.unshift(word[i]);
+                            sortedWord.unshift(negatedTilePosition(word[i]));
                         }
                         startRow = word[0].row;
                     }
@@ -387,7 +451,7 @@ export class Board {
                         sortedWord.unshift({
                             row: minRow - 1,
                             column: col,
-                            tile: tile
+                            tile: tile.negated()
                         });
                     }
                     startRow--;
@@ -398,7 +462,7 @@ export class Board {
                     const word = this.wordsPerCell[maxRow + 1][col].vertical;
                     if (word !== undefined) {
                         for (let i = 0; i < word.length; i++) {
-                            sortedWord.push(word[i]);
+                            sortedWord.push(negatedTilePosition(word[i]));
                         }
                         endRow = word[word.length - 1].row;
                     }
@@ -408,7 +472,7 @@ export class Board {
                         sortedWord.push({
                             row: maxRow + 1,
                             column: col,
-                            tile: tile
+                            tile: tile.negated()
                         });
                     }
                     endRow++;
