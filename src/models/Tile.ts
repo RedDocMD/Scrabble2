@@ -14,4 +14,8 @@ export default class Tile {
     negated(): Tile {
         return new Tile(-1, this.letter);
     }
+
+    clone(): Tile {
+        return new Tile(this.points, this.letter);
+    }
 }

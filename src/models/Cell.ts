@@ -46,6 +46,15 @@ export class Cell {
         return new Cell(this._type);
     }
 
+    clone(): Cell {
+        const cell = new Cell(this._type);
+        cell._state = this._state;
+        if (this._value !== undefined) {
+            cell._value = this._value.clone();
+        }
+        return cell;
+    }
+
     get state(): CellState {
         return this._state;
     }
