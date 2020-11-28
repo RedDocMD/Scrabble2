@@ -7,6 +7,10 @@ export default class Rack {
         this.tiles = [];
     }
 
+    clone() {
+        return this.fromTiles(this.tiles.slice());
+    }
+
     private fromTiles(tiles: Tile[]) {
         const rack = new Rack();
         rack.tiles = tiles;
